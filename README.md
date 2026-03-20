@@ -35,8 +35,7 @@ source venv/bin/activate
 
 ### 3. Criar Arquivo `.env` (obrigatório)
 Crie um arquivo `.env` na raiz do projeto:
-```
-SECRET_KEY=sua_chave_secreta_django_aqui_gerada_com_django-admin-startproject
+
 DEBUG=True
 ```
 > Gere SECRET_KEY em: https://djecrety.ir/
