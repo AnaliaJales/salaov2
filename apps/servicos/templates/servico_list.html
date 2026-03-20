@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Serviços - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        text-align: center;
+        padding: 25px;
+    }
+    
+    .service-icon {
+        font-size: 36px;
+        margin-bottom: 15px;
+        color: #b08671;
+    }
+    
+    .service-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #b08671;
+        margin: 15px 0;
+    }
+    
+    .filter-section {
+        background: linear-gradient(135deg, #d6b48e 50%, #a86331 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-section .form-control, .filter-section .form-control:focus, .filter-section .form-select {
+        border-radius: 25px;
+        border: 2px solid #e9ecef;
+        padding: 12px 20px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-section .form-control:focus, .filter-section .form-select:focus {
+        border-color: #b08671;
+        box-shadow: 0 0 0 0.2rem rgba(176, 134, 113, 0.25);
+    }
+    
+    .btn-filter {
+        border: none;
+        border-radius: 25px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-filter:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-clear {
+        border-radius: 25px;
+        padding: 12px 20px;
+    }
+    
+    .categoria-badge {
+        background: rgba(176, 134, 113, 0.1);
+        color: #b08671;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 10px;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-cut"></i> Serviços</h2>
+            <p class="text-muted">Visualize e gerencie todos os serviços oferecidos</p>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="{% url 'servicos:servico-create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Novo Serviço
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h5 class="mb-4"><i class="fas fa-filter"></i> Filtrar Serviços</h5>
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Nome do Serviço</label>
+                <input type="text" class="form-control" name="search" placeholder="Ex: Corte de cabelo..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Categoria</label>
+                <select class="form-select" name="categoria">
+                    <option value="">Todas as categorias</option>
+                    <option value="CABELO" {% if request.GET.categoria == 'CABELO' %}selected{% endif %}>Cabelo</option>
+                    <option value="MAQUIAGEM" {% if request.GET.categoria == 'MAQUIAGEM' %}selected{% endif %}>Maquiagem</option>
+                    <option value="SPA" {% if request.GET.categoria == 'SPA' %}selected{% endif %}>Spa</option>
+                    <option value="UNHAS" {% if request.GET.categoria == 'UNHAS' %}selected{% endif %}>Unhas</option>
+                    <option value="BARBA" {% if request.GET.categoria == 'BARBA' %}selected{% endif %}>Barba</option>
+                    <option value="DEPILACAO" {% if request.GET.categoria == 'DEPILACAO' %}selected{% endif %}>Depilação</option>
+                    <option value="MASSAGEM" {% if request.GET.categoria == 'MASSAGEM' %}selected{% endif %}>Massagem</option>
+                    <option value="SOBRANCELHAS" {% if request.GET.categoria == 'SOBRANCELHAS' %}selected{% endif %}>Sobrancelhas</option>
+                    <option value="CILIOS" {% if request.GET.categoria == 'CILIOS' %}selected{% endif %}>Cílios</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-filter w-100">
+                    <i class="fas fa-search"></i> Filtrar
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'servicos:servico-list' %}" class="btn btn-outline-secondary w-100 btn-clear">
+                    <i class="fas fa-times"></i> Limpar
+                </a>
+            </div>
+        </form>
+        {% if request.GET.search or request.GET.categoria %}
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i> Filtros ativos:
+                {% if request.GET.search %}'{{ request.GET.search }}'{% endif %}
+                {% if request.GET.categoria %}(Categoria: {{ request.GET.categoria }}){% endif %}
+                {% if servicos %}
+                ({{ servicos|length }} resultado{{ servicos|length|pluralize }})
+                {% endif %}
+            </small>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if servicos %}
+    <div class="row">
+        {% for servico in servicos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 service-card">
+                <div class="service-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h5 class="card-title">{{ servico.nome }}</h5>
+                <div class="service-price">
+                    R$ {{ servico.preco }}
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'servicos:servico-update' servico.pk %}" class="btn btn-sm btn-primary" title="Editar">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'servicos:servico-delete' servico.pk %}" class="btn btn-sm btn-danger" title="Excluir">
+                        <i class="fas fa-trash"></i> Excluir
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if is_paginated %}
+    {% include 'pagination.html' %}
+    {% endif %}
+    {% else %}
+    
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i> Nenhum serviço encontrado. 
+        {% if request.GET.search or request.GET.categoria %}
+        <a href="{% url 'servicos:servico-create' %}" class="alert-link">Crie um novo serviço</a> ou 
+        <a href="{% url 'servicos:servico-list' %}" class="alert-link">limpe os filtros</a>.
+        {% else %}
+        <a href="{% url 'servicos:servico-create' %}" class="alert-link">Crie seu primeiro serviço aqui</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

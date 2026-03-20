@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+
+{% block title %}Salão Rainbow Hair - Bem-vindo{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #F4E4BC 0%, #d1b693 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        border-radius: 0;
+        margin-bottom: 60px;
+    }
+    
+    .hero-section h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .hero-section p {
+        font-size: 20px;
+        margin-bottom: 30px;
+        opacity: 0.95;
+    }
+    
+    .service-card {
+        text-align: center;
+        padding: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .service-card i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .feature-box {
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+        color: white;
+    }
+    
+    .cta-button {
+        margin-top: 10px;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+        font-size: 36px;
+        font-weight: 700;
+        color: #654321;
+    }
+    
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+        margin: 15px auto 0;
+    }
+    
+    /* team section */
+    .team-container {
+        max-width: 1024px;
+        margin: 0 auto 50px;
+    }
+    
+    .team-hero {
+        position: relative;
+        height: 350px;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        margin-bottom: 40px;
+        transition: transform 0.3s ease;
+    }
+    
+    .team-hero:hover {
+        transform: translateY(-10px);
+    }
+    
+    .team-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .team-hero:hover img {
+        transform: scale(1.05);
+    }
+    
+    .team-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgb(255, 255, 255);
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        z-index: 2;
+    }
+    
+    .team-overlay h2 {
+        font-size: 35px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+        color: white;
+        border: 3px solid white;
+        padding: 12px 24px;
+        display: inline-block;
+        border-radius: 0;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    }
+    
+    .team-overlay p {
+        font-size: 20px;
+        opacity: 0.95;
+        font-weight: 300;
+    }
+    
+    .team-stats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .team-description {
+        text-align: center;
+        max-width: 800px;
+        margin: 40px auto;
+        font-size: 18px;
+        color: #555;
+        line-height: 1.6;
+    }
+    
+    .stat-card {
+        text-align: center;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #F4E4BC 0%, #d1b693 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 200px;
+        max-width: 250px;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+        color: white;
+    }
+    
+    .stat-number {
+        font-size: 36px;
+        font-weight: 800;
+        color: #654321;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 16px;
+        color: #8B4513;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+    .team-overlay h2 {
+        font-size: 32px;
+    }
+    
+    .team-overlay p {
+        font-size: 18px;
+    }
+    
+    .team-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero-section mb-5" style="background: url('https://images.pexels.com/photos/853427/pexels-photo-853427.jpeg') center/cover no-repeat; background-blend-mode: multiply;">
+    <div class="container">
+        <h1><i class="fas fa-spa"></i> Salão Rainbow Hair</h1>
+        <p class="lead">Seu espaço de beleza, bem-estar e transformação pessoal</p>
+        {% if not user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{% url 'login' %}" class="btn btn-light btn-lg mr-3">
+                <i class="fas fa-sign-in-alt"></i> Fazer Login
+            </a>
+            <a href="{% url 'usuarios:register' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-user-plus"></i> Criar Conta
+            </a>
+        </div>
+        {% else %}
+        <div class="mt-4">
+            <a href="{% url 'agendamentos:add-agendamento' %}" class="btn btn-light btn-lg mr-3">
+                <i class="fas fa-calendar-plus"></i> Novo Agendamento
+            </a>
+            <a href="{% url 'index' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-list"></i> Meus Agendamentos
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Services Section -->
+<section>
+    <div class="container">
+        <h2 class="section-title">Nossos Serviços</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/7755226/pexels-photo-7755226.jpeg" class="card-img-top" alt="Cortes">
+                    <div class="card-body">
+                        <h5 class="card-title">Cortes e Penteados</h5>
+                        <p class="card-text">Cortes modernos e penteados personalizados para realçar sua beleza natural.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/3993312/pexels-photo-3993312.jpeg" class="card-img-top" alt="Coloração">
+                    <div class="card-body">
+                        <h5 class="card-title">Coloração e Mechas</h5>
+                        <p class="card-text">Técnicas avançadas de coloração com produtos premium para cabelos saudáveis.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/3993451/pexels-photo-3993451.jpeg" class="card-img-top" alt="Tratamentos">
+                    <div class="card-body">
+                        <h5 class="card-title">Tratamentos Especiais</h5>
+                        <p class="card-text">Tratamentos hidratantes, cauterizações e limpezas profundas de cabelo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section>
+    <div class="container">
+        <div class="team-container">
+            <div class="team-hero">
+                <img src="https://protectionforbeauty.volkdobrasil.com.br/blog/wp-content/uploads/2019/03/como-contratar-funcionarios-no-salao-de-beleza-confira-o-que-analisar-1024x776.jpeg" alt="Nossa Equipe">
+                <div class="team-overlay">
+                    <h2>Conheça nossa equipe</h2>
+                    <p>Profissionais experientes e apaixonados por beleza</p>
+                </div>
+            </div>
+            
+            <div class="team-description">
+                Nossa equipe é formada por profissionais altamente qualificados, com anos de experiência no setor de beleza. 
+                Especialistas em cortes modernos, colorações personalizadas, tratamentos capilares e cuidados estéticos. 
+                Comprometidos com a excelência e o bem-estar de cada cliente.
+            </div>
+            
+            <div class="team-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Anos de Experiência</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Especialistas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Clientes Satisfeitos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Satisfação Garantida</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section [continued] -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/12151232/pexels-photo-12151232.jpeg" class="card-img-top" alt="Manicure">
+                    <div class="card-body">
+                        <h5 class="card-title">Manicure e Pedicure</h5>
+                        <p class="card-text">Cuidados completos para unhas com design e decorações especiais.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/3865797/pexels-photo-3865797.jpeg" class="card-img-top" alt="Massagem">
+                    <div class="card-body">
+                        <h5 class="card-title">Massagem Relaxante</h5>
+                        <p class="card-text">Massagens terapêuticas para relaxamento e alívio de tensões.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 service-card">
+                    <img src="https://images.pexels.com/photos/28539659/pexels-photo-28539659.jpeg" class="card-img-top" alt="Pacotes">
+                    <div class="card-body">
+                        <h5 class="card-title">Pacotes Especiais</h5>
+                        <p class="card-text">Promoções exclusivas e pacotes personalizados para seus eventos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section style="background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="section-title">Por que Escolher o Rainbow Hair?</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="feature-box card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h5>Profissionais Qualificados</h5>
+                    <p class="text-muted">Equipe especializada e sempre atualizada com as tendências da moda.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h5>Atendimento Personalizado</h5>
+                    <p class="text-muted">Cada cliente é único para nós. Cuidado individual e dedicação total.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5>Ambiente Seguro</h5>
+                    <p class="text-muted">Higiene e cuidados sanitários rigorosos em todas as nossas operações.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h5>Produtos Premium</h5>
+                    <p class="text-muted">Utilizamos apenas marcas reconhecidas e produtos de alta qualidade.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section>
+    <div class="container">
+        <div class="card" style="background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%); color: white; border: none;">
+            <div class="card-body text-center py-5">
+                <h3 class="mb-3">Pronto para uma transformação?</h3>
+                <p class="lead mb-4">Agende seu horário agora e descubra o melhor em beleza e bem-estar!</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'agendamentos:add-agendamento' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-calendar-check"></i> Agendar Agora
+                </a>
+                {% else %}
+                <a href="{% url 'usuarios:register' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus"></i> Crie sua Conta
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

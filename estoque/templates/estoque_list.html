@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Estoque - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+.table-responsive {
+    border-radius: 10px;
+    background-color: white;
+}
+
+/* excluir personalizado */
+.btn-danger {
+    height: 29px;
+    width: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* navbar corrigida | gradiente */
+.table thead {
+    background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+    border-radius: 12px 12px 0 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.table thead th {
+    color: white !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 16px 20px;
+    position: relative;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.table thead th::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 190px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.table thead th:hover::after {
+    left: 100%;
+}
+
+/* lupa personalizado */
+.btn-primary1 {
+    height: 37px;
+    background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.card-total {
+    background-color:cadetblue
+}
+
+.card-custo {
+    background-color:darkgoldenrod;
+}
+
+.card-venda {
+    background-color:darkolivegreen;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-warehouse"></i> Controle de Estoque</h2>
+        </div>
+    </div>
+
+    <!-- Cards Totais -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card card-total text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-boxes"></i> Total Estoque</h5>
+                    <h2>{{ total_estoque|default:"0" }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-custo text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-dollar-sign"></i> Total Custo</h5>
+                    <h2>R$ {{ total_custo|floatformat:2|default:"0,00" }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-venda text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-tag"></i> Total Venda</h5>
+                    <h2>R$ {{ total_venda|floatformat:2|default:"0,00" }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros e Botão Adicionar -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Buscar por nome ou fornecedor..." value="{{ search }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary1" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="get" class="d-inline">
+                <input type="hidden" name="search" value="{{ search }}">
+                <select name="categoria" class="form-control" onchange="this.form.submit()">
+                    <option value="">Todas Categorias</option>
+                    {% for value, label in categorias %}
+                        <option value="{{ value }}" {% if categoria == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="col-md-3 text-right">
+            <a href="{% url 'estoque:estoque-create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Adicionar Produto
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    {% if estoques %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Qtd.</th>
+                    <th>Custo Unit.</th>
+                    <th>Venda Unit.</th>
+                    <th>Total Custo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estoque in estoques %}
+                <tr>
+                    <td>{{ estoque.nome }}</td>
+                    <td><span class="badge badge-info">{{ estoque.get_categoria_display }}</span></td>
+                    <td><strong>{{ estoque.quantidade }}</strong></td>
+                    <td>R$ {{ estoque.preco_custo|floatformat:2 }}</td>
+                    <td>R$ {{ estoque.preco_venda|floatformat:2 }}</td>
+                    <td><strong>R$ {{ estoque.total_custo|floatformat:2 }}</strong></td>
+                    <td style="display: flex; gap: 8px; align-items: center; padding: 8px 12px;">
+                        <a href="{% url 'estoque:estoque-update' estoque.pk %}" class="btn btn-sm btn-success" style="padding: 6px 12px; font-size: 12px;"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'estoque:estoque-delete' estoque.pk %}" class="btn btn-sm btn-danger" style="padding: 6px 10px; font-size: 12px;"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    {% include 'pagination.html' %}
+    {% endif %}
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum produto no estoque. <a href="{% url 'estoque:estoque-create' %}">Adicione o primeiro!</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

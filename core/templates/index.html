@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+
+{% include 'pagination.html' %}
+
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: linear-gradient(135deg, #d6b48e 50%, #a86331 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        color: white;
+    }
+    
+    .filter-section h5 {
+        color: white !important;
+    }
+    
+    .filter-section .form-label {
+        color: #654321 !important;
+        font-weight: 60;
+    }
+    
+    .filter-section .form-control {
+        border-radius: 25px;
+    }
+    
+    .filter-section .form-control:focus {
+        border-color: #b08671;
+        box-shadow: 0 0 0 0.2rem rgba(176, 134, 113, 0.25);
+    }
+    
+    .btn-filter {
+        border-radius: 25px;
+        font-weight: 600;
+        height: 44px; 
+    }
+    
+    .btn-clear {
+        border-radius: 25px;
+    }
+    
+    .agendamento-card {
+        border-left: 5px solid;
+        transition: all 0.3s ease;
+    }
+    
+    .agendamento-card.concluido {
+        border-left-color: #28a745;
+    }
+    
+    .agendamento-card.agendado {
+        border-left-color: #ffc107;
+    }
+    
+    .agendamento-card.cancelado {
+        border-left-color: #dc3545;
+    }
+    
+    .agendamento-card:hover {
+        transform: translateX(5px);
+    }
+    
+    .status-badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    
+    .status-badge.concluido {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.agendado {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-badge.cancelado {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Inline edit styles */
+    .edit-form .form-group {
+        margin-bottom: 15px;
+        border-radius: 25px;
+    }
+    .edit-form .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+    .edit-form input, .edit-form select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .edit-form textarea {
+        height: 60px;
+        resize: vertical;
+    }
+    .edit-form input:focus, .edit-form select:focus {
+        outline: none;
+        border-color: #b08671;
+        box-shadow: 0 0 5px rgba(176, 134, 113, 0.2);
+    }
+    .agendamento-card.editing {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary1 {
+        color: white;
+        background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%);
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary1:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(139, 94, 60, 0.4);
+        color: white;
+        background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-5">
+<div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2><i class="fas fa-calendar-check"></i> Meus Agendamentos</h2>
+            <p class="text-muted">Visualize e gerencie todos os seus agendamentos</p>
+        </div>
+        <div class="col-md-6 text-right">
+            <div class="btn-group" role="group">
+                <a href="{% url 'agendamentos:calendarios:agenda' %}" class="btn btn-info btn-lg"> 
+                    <i class="fas fa-calendar-alt"></i> Agenda
+                </a>
+                <a href="{% url 'agendamentos:add-agendamento' %}" class="btn btn-primary1 btn-lg">
+                    <i class="fas fa-plus"></i> Novo Agendamento
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Filtros -->
+    <div class="filter-section">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h5 class="mb-0" style="color: #654321 !important; font-weight: bold;"><i class="fas fa-filter"></i> Filtrar Agendamentos</h5>
+            </div>
+            <div class="col-md-4 text-md-right">
+                <button type="submit" form="filterForm" class="btn btn-primary btn-filter mr-2">
+                    <i class="fas fa-search"></i> Filtrar
+                </button>
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-clear" onclick="clearFilters(); window.location.href = '{% url 'index' %}'; return false;">
+                    <i class="fas fa-times"></i> Limpar
+                </a>
+            </div>
+        </div>
+        <form method="GET" id="filterForm" class="row g-3">
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Profissional</label>
+                <select name="profissional" class="form-control">
+                    <option value="">Todos</option>
+                    {% for profissional in profissionais %}
+                    <option value="{{ profissional.id }}" {% if request.GET.profissional == profissional.id|stringformat:'s' %}selected{% endif %}>
+                        {{ profissional.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Cliente</label>
+                <select name="cliente" class="form-control">
+                    <option value="">Todos</option>
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}" {% if request.GET.cliente == cliente.id|stringformat:'s' %}selected{% endif %}>
+                        {{ cliente.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Serviço</label>
+                <select name="servico" class="form-control">
+                    <option value="">Todos</option>
+                    {% for servico in servicos %}
+                    <option value="{{ servico.id }}" {% if request.GET.servico == servico.id|stringformat:'s' %}selected{% endif %}>
+                        {{ servico.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Data</label>
+                <input type="date" name="data" value="{{ request.GET.data }}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Hora</label>
+                <input type="time" name="hora" value="{{ request.GET.hora }}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Status</label>
+                <select name="status" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="AGENDADO" {% if request.GET.status == 'AGENDADO' %}selected{% endif %}>Agendado</option>
+                    <option value="CONCLUIDO" {% if request.GET.status == 'CONCLUIDO' %}selected{% endif %}>Concluído</option>
+                    <option value="CANCELADO" {% if request.GET.status == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if single_agendamento %}
+    <div class="alert alert-success mb-4">
+        <i class="fas fa-eye"></i> Visualizando agendamento específico filtrado da agenda: 
+        <strong>{{ agendamentos.0.servico.nome }}</strong> - {{ agendamentos.0.cliente.nome }}
+    </div>
+    {% endif %}
+
+    {% if agendamentos %}
+    <div class="row">
+        {% for agendamento in agendamentos %}
+        <div class="col-md-6 mb-4">
+            <div class="card agendamento-card {{ agendamento.status|lower }}" data-id="{{ agendamento.id }}">
+                <div class="card-body">
+                    <div class="view-mode">
+                        <div class="row align-items-start">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-2">
+                                    <i class="fas fa-cut"></i> {{ agendamento.servico.nome }}
+                                </h5>
+                                <p class="card-text mb-2">
+                                    <strong>Cliente:</strong> {{ agendamento.cliente.nome }}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <strong>Profissional:</strong> {{ agendamento.profissional.nome }}
+                                </p>
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-calendar"></i> 
+                                    <strong>Data/Hora:</strong> {{ agendamento.data_hora|date:"d/m/Y \à\s H:i" }}
+                                </p>
+                                {% if agendamento.observacoes %}
+                                <p class="card-text mb-0">
+                                    <i class="fas fa-sticky-note"></i> 
+                                    <strong>Observações:</strong> {{ agendamento.observacoes|truncatechars:80 }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <span class="status-badge {{ agendamento.status|lower }}">
+                                    {{ agendamento.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary edit-toggle">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <a href="{% url 'agendamentos:delete-agendamento' agendamento.id %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Excluir
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="edit-mode" style="display: none;">
+                        <hr>
+                        <form class="edit-form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Cliente</label>
+                                <select name="cliente" class="form-control" required>
+                                    {% for cliente in clientes %}
+                                    <option value="{{ cliente.id }}" {% if cliente.id == agendamento.cliente.id %}selected{% endif %}>
+                                        {{ cliente.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Serviço</label>
+                                <select name="servico" class="form-control" required>
+                                    {% for servico in servicos %}
+                                    <option value="{{ servico.id }}" {% if servico.id == agendamento.servico.id %}selected{% endif %}>
+                                        {{ servico.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Profissional</label>
+                                <select name="profissional" class="form-control" required>
+                                    {% for profissional in profissionais %}
+                                    <option value="{{ profissional.id }}" {% if profissional.id == agendamento.profissional.id %}selected{% endif %}>
+                                        {{ profissional.nome }} ({{ profissional.especialidade }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Data e Hora</label>
+                                <input type="datetime-local" name="data_hora" value="{{ agendamento.data_hora|date:'Y-m-d\\TH:i' }}" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select name="status" class="form-control">
+                                    <option value="AGENDADO" {% if agendamento.status == 'AGENDADO' %}selected{% endif %}>Agendado</option>
+                                    <option value="CONCLUIDO" {% if agendamento.status == 'CONCLUIDO' %}selected{% endif %}>Concluído</option>
+                                <option value="CANCELADO" {% if agendamento.status == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Observações</label>
+                                <textarea name="observacoes" class="form-control" rows="2">{{ agendamento.observacoes|default:'' }}</textarea>
+                            </div>
+                            <div class="button-group mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm save-btn">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-btn">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    {% include 'pagination.html' %}
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i> Você ainda não tem nenhum agendamento. 
+        <a href="{% url 'agendamentos:add-agendamento' %}" class="alert-link">Crie um novo agendamento agora!</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- o codigo do edit(update) do agendamento esta aqui -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear filters function for Limpar button
+    window.clearFilters = function() {
+        const form = document.getElementById('filterForm');
+        if (form) {
+            // Clear all selects to first option (Todos / empty)
+            const selects = form.querySelectorAll('select');
+            selects.forEach(select => {
+                select.selectedIndex = 0;
+            });
+            // Clear date/time inputs
+            const inputs = form.querySelectorAll('input[type="date"], input[type="time"]');
+            inputs.forEach(input => {
+                input.value = '';
+            });
+            // Optional: Trigger change events if needed
+            selects.forEach(select => select.dispatchEvent(new Event('change')));
+        }
+    };
+
+    // Toggle edit
+    document.querySelectorAll('.edit-toggle').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('.agendamento-card');
+            card.querySelector('.view-mode').style.display = 'none';
+            card.querySelector('.edit-mode').style.display = 'block';
+            card.classList.add('editing');
+        });
+    });
+
+    // Cancel
+    document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('.agendamento-card');
+            card.querySelector('.view-mode').style.display = 'block';
+            card.querySelector('.edit-mode').style.display = 'none';
+            card.classList.remove('editing');
+        });
+    });
+
+    // Save
+    document.querySelectorAll('.edit-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('.save-btn');
+            const formData = new FormData(this);
+            const card = this.closest('.agendamento-card');
+            const id = card.dataset.id;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            
+            fetch(`{% url 'agendamentos:update-agendamento' 0 %}`.replace('0', id), {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update view mode
+                    const viewFields = card.querySelector('.col-md-8');
+                    const statusBadge = card.querySelector('.status-badge');
+                    viewFields.innerHTML = `
+                        <h5 class="card-title mb-2">
+                            <i class="fas fa-cut"></i> ${data.data.servico}
+                        </h5>
+                        <p class="card-text mb-2">
+                            <strong>Cliente:</strong> ${data.data.cliente}
+                        </p>
+                        <p class="card-text mb-2">
+                            <strong>Profissional:</strong> ${data.data.profissional}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-calendar"></i> 
+                            <strong>Data/Hora:</strong> ${data.data.data_hora}
+                        </p>
+                        ${data.data.observacoes ? `<p class="card-text mb-0">
+                            <i class="fas fa-sticky-note"></i> 
+                            <strong>Observações:</strong> ${data.data.observacoes.length > 80 ? data.data.observacoes.substring(0, 80) + '...' : data.data.observacoes}
+                        </p>` : ''}
+                    `;
+                    statusBadge.textContent = data.data.status;
+                    statusBadge.className = `status-badge ${data.data.status_class}`;
+                    card.className = `card agendamento-card ${data.data.status_class}`;
+                    
+                    card.querySelector('.view-mode').style.display = 'block';
+                    card.querySelector('.edit-mode').style.display = 'none';
+                    card.classList.remove('editing');
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            })
+            .catch(() => alert('Erro de conexão'))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Salvar';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

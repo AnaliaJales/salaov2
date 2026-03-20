@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if servico %}Editar Serviço{% else %}Novo Serviço{% endif %} - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+    }
+    
+    .form-container .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .form-container input[type="text"],
+    .form-container input[type="number"],
+    .form-container input[type="email"],
+    .form-container textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+    
+    .form-container input:focus,
+    .form-container textarea:focus {
+        outline: none;
+        border-color: #b08671;
+        box-shadow: 0 0 10px rgba(176, 134, 113, 0.2);
+    }
+    
+    .button-group {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .form-group .form-category {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    /* Improved category select styling */
+    .form-container #id_categoria {
+        width: 100%;
+        padding: 14px 40px 14px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        background: white;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238B4513' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 20px;
+        appearance: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-container #id_categoria:hover {
+        border-color: #b08671;
+        box-shadow: 0 4px 12px rgba(176, 134, 113, 0.15);
+    }
+
+    .form-container #id_categoria:focus {
+        outline: none;
+        border-color: #b08671;
+        box-shadow: 0 0 0 3px rgba(176, 134, 113, 0.2);
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    }
+
+    .form-container #id_categoria option {
+        padding: 12px;
+        font-weight: 500;
+        color: #654321;
+    }
+
+    .form-container #id_categoria option:checked {
+        font-weight: 600;
+        background: linear-gradient(135deg, #D2B48C, #8B4513);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h3>{% if servico %}<i class="fas fa-edit"></i> Editar Serviço{% else %}<i class="fas fa-plus"></i> Novo Serviço{% endif %}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.nome.id_for_label }}">Nome do Serviço *</label>
+                    {{ form.nome }}
+                    {% if form.nome.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.nome.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.preco.id_for_label }}">Preço (R$) *</label>
+                    {{ form.preco }}
+                    {% if form.preco.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.preco.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-category" for="{{ form.categoria.id_for_label }}">Categoria *</label>
+                    {{ form.categoria }}
+                    {% if form.categoria.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.categoria.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <a href="{% url 'servicos:servico-list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,578 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% block extra_css %}
+<style>
+/* Filter section */
+.filter-section {
+    background: linear-gradient(135deg, #d6b48e 50%, #a86331 100%);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    #relatorioTabsContent, #relatorioTabsContent * {
+        visibility: visible;
+    }
+    
+    #relatorioTabsContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    
+    .navbar,
+    footer,
+    .filter-section,
+    .nav-tabs,
+    button, 
+    .btn,
+    canvas,
+    h2 {
+        display: none !important;
+    }
+    
+    .tab-pane {
+        display: block !important;
+        page-break-before: always;
+        page-break-inside: avoid;
+        margin-bottom: 20px;
+        break-before: page;
+    }
+    
+    h4 {
+        page-break-after: avoid;
+        font-size: 16pt;
+        color: black;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        margin-top: 20px;
+    }
+    
+    .chart-container, .table-container, .table-container2, .chart-container2 {
+        box-shadow: none !important;
+        background: white !important;
+        border: 2px solid #333 !important;
+        page-break-inside: auto;
+        margin-bottom: 20px;
+    }
+    
+    .table {
+        font-size: 11pt !important;
+        width: 100% !important;
+        border-collapse: collapse;
+    }
+    
+    .table th {
+        background: #f0f0f0 !important;
+        color: black !important;
+        border: 1px solid #333 !important;
+        font-size: 12pt !important;
+        font-weight: bold;
+        padding: 12px !important;
+        text-align: left;
+    }
+    
+    .table td {
+        border: 1px solid #333 !important;
+        padding: 10px !important;
+    }
+    
+    @page {
+        size: A4 landscape;
+        margin: 1.5cm;
+    }
+    
+    h5 {
+        display: none !important;
+    }
+    
+    .print-summary {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 30px;
+        page-break-after: avoid;
+    }
+}
+
+.filter-section h5 { 
+    color: white !important; font-weight: bold; 
+}
+.filter-section .form-label { 
+    color: #654321 !important; font-weight: 600; 
+}
+.filter-section .form-control { 
+    border-radius: 25px; 
+}
+.filter-section .form-control:focus { 
+    border-color: #b08671; 
+    box-shadow: 0 0 0 0.2rem rgba(176,134,113,0.25); 
+}
+.btn-filter { 
+    background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%); 
+    border: none; border-radius: 25px; 
+    font-weight: 600; 
+}
+.btn-filter:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(176,134,113,0.3); 
+    color: white !important; 
+}
+.btn-clear { 
+    background: linear-gradient(135deg, #e0e0e0be 0%, #4b4b4b 100%); 
+    border: none; 
+    color: white; 
+}
+.btn-clear:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+    color: white !important; 
+}
+
+/* Nav tabs */
+.nav-tabs { 
+    background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%); 
+    border-radius: 12px; 
+    padding: 12px 20px; 
+    margin-bottom: 25px; 
+    box-shadow: 0 4px 12px rgba(139,69,19,0.3); 
+    border: none; 
+}
+.nav-tabs .nav-link { 
+    color: white !important; 
+    background: transparent !important; 
+    border: none !important; 
+    margin-right: 8px; 
+    padding: 12px 20px; 
+    border-radius: 25px 25px 0 0 !important; 
+    font-weight: 600; 
+    transition: all 0.3s ease; 
+}
+.nav-tabs .nav-link:hover { 
+    background: rgba(255,255,255,0.2) !important; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+}
+.nav-tabs .nav-link.active { 
+    background: rgba(255,255,255,0.3) !important; 
+    color: white !important; 
+}
+
+/* Chart containers */
+.chart-container { 
+    background: white; 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    height: 350px; 
+    margin-bottom: 20px;
+}
+.table-container { 
+    background: white; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    margin-bottom: 20px; 
+}
+
+.chart-container2 { 
+    background: white; 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    height: 350px; 
+    margin-bottom: 20px;
+    width: 340px;
+}
+
+.table-container2 { 
+    background: white; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    margin-bottom: 20px; 
+    width: 410px;
+    height: 186px;
+    margin-left: -10px;
+}
+
+/* texto total status */
+.text-muted { 
+    color: #654321 !important;
+}
+
+/* filtrar personalizado */
+.btn-primary {
+    height: 44px;
+    align-content: center;
+    padding: 10px 15px;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+/* Print-only elements */
+.chart-data {
+    display: none;
+}
+@media print {
+    .chart-data {
+        display: block !important;
+    }
+    canvas {
+        display: none !important;
+    }
+    .chart-container .chart-data {
+        margin-top: 20px;
+    }
+}
+
+/* botão impressão de relatorios */
+.btn-success1 {
+    background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.btn-success1:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(161, 134, 111, 0.4);
+    background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%);
+    border: none;
+    color: white;
+}
+
+</style>
+{% endblock %}
+
+<h2><i class="fas fa-chart-line"></i>Relatórios Financeiros</h2>
+
+<!-- Main Filter Section -->
+<div class="filter-section">
+    <div class="row align-items-center mb-1">
+        <div class="col-md-8">
+            <h5 class="filter-text mb-0">Filtrar Relatórios por Período</h5>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="#" onclick="baixarPDF(event)" class="btn btn-success1 ml-2">
+                <i class="fas fa-file-pdf"></i> Baixar Relatório PDF Completo
+            </a>
+            <button onclick="aplicarFiltros()" class="btn btn-primary btn-filter mr-2">
+                Aplicar Filtros
+            </button>
+            <button onclick="limparFiltros()" class="btn btn-clear">
+                Limpar
+            </button>
+        </div>
+    </div>
+    <form id="filterForm" class="row g-3">
+        <div class="col-md-5">
+            <label class="form-label">Data Início</label>
+            <input type="date" id="data_inicio" class="form-control">
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">Data Fim</label>
+            <input type="date" id="data_fim" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="hidden" name="periodo" id="filter_periodo" value="dia">
+            <input type="hidden" id="periodo" value="dia">
+        </div>
+    </form>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="relatorioTabs" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" id="agendamentos-tab" data-toggle="tab" data-target="#agendamentos" type="button">Agendamentos</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="faturamento-tab" data-toggle="tab" data-target="#faturamento" type="button">Faturamento</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="servicos-tab" data-toggle="tab" data-target="#servicos" type="button">Serviços</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="profissionais-tab" data-toggle="tab" data-target="#profissionais" type="button">Profissionais</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="status-tab" data-toggle="tab" data-target="#status" type="button">Status</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="clientes-tab" data-toggle="tab" data-target="#clientes" type="button">Clientes</button>
+    </li>
+</ul>
+
+<div class="tab-content mt-4 print-content" id="relatorioTabsContent">
+    <!-- Agendamentos -->
+    <div class="tab-pane fade show active" id="agendamentos" role="tabpanel">
+        <h4>Agendamentos Concluídos por Dia</h4>
+        <h5 class="text-primary mb-4">Total: <span id="total_agendamentos" class="badge badge-primary">0</span></h5>
+        <div class="chart-container">
+            <canvas id="chartAgendamentos"></canvas>
+            <div id="chart-data-agendamentos" class="chart-data">
+                <h6>Agendamentos por Dia (Dados do Gráfico):</h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr><th>Data</th><th>Quantidade</th></tr>
+                    </thead>
+                    <tbody id="tabela-agendamentos-por-dia"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faturamento -->
+    <div class="tab-pane fade" id="faturamento" role="tabpanel">
+        <h4>Relatório de Faturamento</h4>
+        <h5 class="text-success mb-4">Total Faturado: <span id="total_faturamento" class="badge badge-success">R$ 0,00</span></h5>
+        <div class="chart-container">
+            <canvas id="chartFaturamento"></canvas>
+            <div id="chart-data-faturamento" class="chart-data">
+                <h6>Faturamento por Período (Dados do Gráfico):</h6>
+                <table class="table table-sm">
+                    <thead>
+                        <tr><th>Período</th><th>Faturamento</th><th>Quantidade</th></tr>
+                    </thead>
+                    <tbody id="tabela-faturamento-por-periodo"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Serviços -->
+    <div class="tab-pane fade" id="servicos" role="tabpanel">
+        <h4>Serviços Mais Populares</h4>
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela_servicos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Profissionais -->
+    <div class="tab-pane fade" id="profissionais" role="tabpanel">
+        <h4>Desempenho dos Profissionais</h4>
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Profissional</th>
+                        <th>Especialidade</th>
+                        <th>Qtde</th>
+                        <th>Faturado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela_profissionais"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="tab-pane fade" id="status" role="tabpanel">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Status dos Agendamentos</h4>
+                <div class="chart-container2">
+                    <canvas id="chartStatus"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-muted mb-4">Total: <span id="total_status">0</span></h5>
+                <div class="table-container2">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Qtde</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela_status"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clientes -->
+    <div class="tab-pane fade" id="clientes" role="tabpanel">
+        <h4>Top 10 Clientes</h4>
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Telefone</th>
+                        <th>Visitas</th>
+                        <th>Gasto</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela_clientes"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let charts = {};
+
+
+function getFiltros() {
+    return {
+        data_inicio: document.getElementById('data_inicio').value,
+        data_fim: document.getElementById('data_fim').value
+    };
+}
+
+function construirURL(baseUrl) {
+    const f = getFiltros();
+    let params = new URLSearchParams();
+    if (f.data_inicio) params.append('data_inicio', f.data_inicio);
+    if (f.data_fim) params.append('data_fim', f.data_fim);
+    return baseUrl + (params.toString() ? '?' + params.toString() : '');
+}
+
+function aplicarFiltros() {
+    document.getElementById('filter_periodo').value = document.getElementById('periodo')?.value || 'dia';
+    carregarTodos();
+}
+
+function limparFiltros() {
+    document.getElementById('data_inicio').value = '';
+    document.getElementById('data_fim').value = '';
+    carregarTodos();
+}
+
+function carregarTodos() {
+    carregarAgendamentos();
+    carregarFaturamento();
+    carregarServicos();
+    carregarProfissionais();
+    carregarStatus();
+    carregarClientes();
+}
+
+function carregarAgendamentos() {
+    fetch(construirURL("{% url 'relatorios:dados-relatorio' %}"))
+        .then(r => r.json()).then(d => {
+            document.getElementById('total_agendamentos').textContent = d.total;
+            // Preenche tabela de dados para impressão
+            const tbody = document.getElementById('tabela-agendamentos-por-dia');
+            if (tbody) {
+                tbody.innerHTML = Object.entries(d.por_dia).map(([data, qtd]) => 
+                    `<tr><td>${data}</td><td>${qtd}</td></tr>`
+                ).join('');
+            }
+            destroyChart('chartAgendamentos');
+            charts.chartAgendamentos = new Chart(document.getElementById('chartAgendamentos'), {
+                type: 'bar',
+                data: { labels: Object.keys(d.por_dia), datasets: [{ label: 'Agendamentos', data: Object.values(d.por_dia), backgroundColor: 'rgba(54,162,235,0.7)' }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        });
+}
+
+function carregarFaturamento() {
+    const periodo = document.getElementById('periodo')?.value || 'dia';
+    fetch(construirURL("{% url 'relatorios:dados-relatorio-faturamento' %}?periodo=" + periodo))
+        .then(r => r.json()).then(d => {
+            document.getElementById('total_faturamento').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(d.total_faturamento || 0);
+            destroyChart('chartFaturamento');
+            charts.chartFaturamento = new Chart(document.getElementById('chartFaturamento'), {
+                type: 'line',
+                data: { labels: Object.keys(d.por_periodo), datasets: [{ label: 'Faturamento', data: Object.values(d.por_periodo).map(p => p.total), borderColor: '#28a745', fill: true }] },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        });
+}
+
+function carregarServicos() {
+    fetch(construirURL("{% url 'relatorios:dados-relatorio-servicos' %}"))
+        .then(r => r.json()).then(d => {
+            document.querySelector('#tabela_servicos').innerHTML = d.servicos.map(s => 
+                `<tr><td>${s.nome}</td><td>${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(s.preco)}</td><td class="badge badge-primary">${s.quantidade}</td><td class="text-success fw-bold">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(s.total_faturado)}</td></tr>`).join('');
+        });
+}
+
+function carregarProfissionais() { fetch(construirURL("{% url 'relatorios:dados-relatorio-profissionais' %}")).then(r => r.json()).then(d => {
+    document.querySelector('#tabela_profissionais').innerHTML = d.profissionais.map(p => 
+        `<tr><td><strong>${p.nome}</strong></td><td>${p.especialidade}</td><td class="badge badge-info">${p.quantidade}</td><td class="text-success fw-bold">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.total_faturado)}</td></tr>`).join(''); }); }
+
+function carregarStatus() { fetch(construirURL("{% url 'relatorios:dados-relatorio-status' %}")).then(r => r.json()).then(d => {
+    document.getElementById('total_status').textContent = d.total_geral;
+    destroyChart('chartStatus');
+    const colors = {'AGENDADO':'#ffc107','CONCLUIDO':'#28a745','CANCELADO':'#dc3545'};
+    charts.chartStatus = new Chart(document.getElementById('chartStatus'), {
+        type: 'doughnut',
+        data: { labels: d.status.map(s => s.status), datasets: [{ data: d.status.map(s => s.total), backgroundColor: d.status.map(s => colors[s.status]) }] },
+        options: { responsive: true }
+    });
+    document.querySelector('#tabela_status').innerHTML = d.status.map(s => `<tr><td class="badge" style="background:${colors[s.status]};color:white;">${s.status}</td><td><strong>${s.total}</strong></td></tr>`).join('');
+}); }
+
+function carregarClientes() { fetch(construirURL("{% url 'relatorios:dados-relatorio-clientes' %}")).then(r => r.json()).then(d => {
+    document.querySelector('#tabela_clientes').innerHTML = d.clientes.map(c => 
+        `<tr><td><strong>${c.nome}</strong></td><td>${c.telefone}</td><td class="badge badge-warning">${c.quantidade}</td><td class="text-success fw-bold">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.total_gasto)}</td></tr>`).join(''); }); }
+
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+// função do relatorio
+function baixarPDF(event) {
+    event.preventDefault();
+    const dataInicio = document.getElementById('data_inicio').value;
+    const dataFim = document.getElementById('data_fim').value;
+    let url = "{% url 'relatorios:relatorio-pdf' %}";
+    if (dataInicio || dataFim) {
+        url += '?';
+        if (dataInicio) url += `data_inicio=${dataInicio}&`;
+        if (dataFim) url += `data_fim=${dataFim}`;
+    }
+    window.open(url, '_blank');
+}
+
+// nav-tab fixada
+function initTabPersistence() {
+    // Listen for tab shown events
+    $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        const tabId = $(e.target).attr('id');
+        localStorage.setItem('relatoriosActiveTab', tabId);
+    });
+
+    // Restore tab on page load
+    const activeTabId = localStorage.getItem('relatoriosActiveTab');
+    if (activeTabId) {
+        $(`#${activeTabId}`).tab('show');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('data_inicio')) document.getElementById('data_inicio').value = params.get('data_inicio');
+    if (params.get('data_fim')) document.getElementById('data_fim').value = params.get('data_fim');
+    initTabPersistence();
+    carregarTodos();
+});
+</script>
+
+{% endblock %}

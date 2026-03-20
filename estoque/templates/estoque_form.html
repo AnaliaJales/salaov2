@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Novo{% endif %} Produto - Estoque{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus{% endif %}-circle"></i>
+                        {% if form.instance.pk %}Editar Produto{% else %}Novo Produto{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Nome do Produto *</label>
+                                {{ form.nome }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Categoria *</label>
+                                {{ form.categoria }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>Quantidade *</label>
+                                {{ form.quantidade }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Preço de Custo *</label>
+                                {{ form.preco_custo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Preço de Venda *</label>
+                                {{ form.preco_venda }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label>Fornecedor (opcional)</label>
+                                {{ form.fornecedor }}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <a href="{% url 'estoque:estoque-list' %}" class="btn btn-secondary mr-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

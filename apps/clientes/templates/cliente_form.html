@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if cliente %}Editar Cliente{% else %}Novo Cliente{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+    }
+    
+    .form-container .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .form-container input[type="text"],
+    .form-container input[type="number"],
+    .form-container input[type="email"],
+    .form-container textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+    
+    .form-container input:focus,
+    .form-container textarea:focus {
+        outline: none;
+        border-color: #b08671;
+        box-shadow: 0 0 10px rgba(176, 134, 113, 0.2);
+    }
+    
+    .button-group {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h3>{% if cliente %}<i class="fas fa-edit"></i> Editar Cliente{% else %}<i class="fas fa-plus"></i> Novo Cliente{% endif %}</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.nome.id_for_label }}">Nome do Cliente *</label>
+                    {{ form.nome }}
+                    {% if form.nome.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.nome.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email *</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.email.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.telefone.id_for_label }}">Telefone *</label>
+                    {{ form.telefone }}
+                    {% if form.telefone.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.telefone.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <a href="{% url 'clientes:cliente-list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

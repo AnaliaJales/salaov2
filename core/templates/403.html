@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Acesso Negado - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-page {
+        text-align: center;
+        padding: 80px 0;
+    }
+    .error-code {
+        font-size: 120px;
+        font-weight: 700;
+        color: #8B4513;
+        line-height: 1;
+        margin-bottom: 20px;
+    }
+    .error-message {
+        font-size: 24px;
+        color: #654321;
+        margin-bottom: 40px;
+    }
+    .back-link {
+        display: inline-block;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #D2B48C 0%, #8B4513 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .back-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(139, 94, 60, 0.4);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-code">403</div>
+    <h1 class="error-message">Acesso Negado</h1>
+    <p class="text-muted mb-4">Você não tem permissão para acessar esta página.</p>
+    <a href="{% url 'home' %}" class="back-link">
+        <i class="fas fa-home"></i> Voltar ao Início
+    </a>
+</div>
+{% endblock %}

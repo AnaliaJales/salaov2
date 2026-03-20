@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Perfil - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 30px;
+    }
+    .profile-field {
+        margin-bottom: 15px;
+    }
+    .profile-field label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .profile-actions {
+        margin-top: 30px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="card profile-card">
+    <div class="card-header text-center">
+        <h3><i class="fas fa-user-circle"></i> Meu Perfil</h3>
+    </div>
+    <div class="card-body">
+        <div class="profile-field">
+            <label>Usuário</label>
+            <p>{{ user_obj.username }}</p>
+        </div>
+        <div class="profile-field">
+            <label>Email</label>
+            <p>{{ user_obj.email|default:'- não informado -' }}</p>
+        </div>
+        <div class="profile-field">
+            <label>Data de cadastro</label>
+            <p>{{ user_obj.date_joined|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="profile-field">
+            <label>Administrador?</label>
+            <p>{% if user_obj.is_staff %}Sim{% else %}Não{% endif %}</p>
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'usuarios:edit-usuario' user_obj.id %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Editar Perfil
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

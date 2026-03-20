@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão (Serviços)- Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirm-container {
+        max-width: 500px;
+        margin: 50px auto;
+    }
+    
+    .confirm-card {
+        border: 2px solid #f5576c;
+    }
+    
+    .confirm-card .card-header {
+        background: #dc3545 !important;
+        color: #fff5f7;
+    }
+    
+    .button-group {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="confirm-container">
+    <div class="card confirm-card">
+        <div class="card-header">
+            <h4 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h4>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead mt-3">Você tem certeza que deseja excluir o serviço:</p>
+            <h5 style="color: #b08671; font-weight: 700;">{{ servico.nome }}</h5>
+            <p class="text-muted mt-4 mb-4">
+                <i class="fas fa-info-circle"></i> Esta ação não pode ser desfeita.
+            </p>
+            
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                    <a href="{% url 'servicos:servico-list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

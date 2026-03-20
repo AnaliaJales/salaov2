@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Usuário - Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+    }
+    
+    .form-container .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .form-container input[type="text"],
+    .form-container input[type="checkbox"] {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+    
+    .form-container input:focus {
+        outline: none;
+        border-color: #b08671;
+        box-shadow: 0 0 10px rgba(176, 134, 113, 0.2);
+    }
+    
+    .button-group {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-edit"></i> Editar Usuário</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Username *</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="text-danger mt-2">
+                        {% for error in form.username.errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group checkbox-group">
+                    {{ form.is_staff }}
+                    <label for="{{ form.is_staff.id_for_label }}">Este usuário é administrador?</label>
+                </div>
+                <small class="text-muted d-block mb-3">
+                    <i class="fas fa-info-circle"></i> Administradores têm acesso a funcionalidades avançadas
+                </small>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <a href="{% url 'usuarios:usuarios' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

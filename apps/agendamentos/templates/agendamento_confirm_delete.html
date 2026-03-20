@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão (Agendamento)- Salão Rainbow Hair{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirm-container {
+        max-width: 500px;
+        margin: 50px auto;
+    }
+    
+    .confirm-card {
+        border: 2px solid #dc3545;
+    }
+    
+    .confirm-card .card-header {
+        background: #dc3545 !important;
+        color: #fff5f7;
+    }
+    
+    .button-group {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="confirm-container">
+    <div class="card confirm-card">
+        <div class="card-header">
+            <h4 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h4>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead mt-3">Você tem certeza que deseja excluir este agendamento?</p>
+            <div class="alert alert-warning" role="alert">
+                <h6><i class="fas fa-cut"></i> {{ agendamento.servico.nome }}</h6>
+                <p class="mb-1"><strong>Cliente:</strong> {{ agendamento.cliente.nome }}</p>
+                <p class="mb-1"><strong>Profissional:</strong> {{ agendamento.profissional.nome }}</p>
+                <p class="mb-1"><strong>Data/Hora:</strong> {{ agendamento.data_hora|date:"d/m/Y \à\s H:i" }}</p>
+                <p class="mb-0"><strong>Observações:</strong> {{ agendamento.observacoes|truncatechars:100|default:"Nenhuma" }}</p>
+            </div>
+            <p class="text-muted mt-4 mb-4">
+                <i class="fas fa-info-circle"></i> Esta ação não pode ser desfeita.
+            </p>
+            
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-trash"></i> Excluir Agendamento
+                    </button>
+                    <a href="{% url 'index' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
